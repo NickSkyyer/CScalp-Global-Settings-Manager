@@ -19,14 +19,14 @@ Fast way to set up your CScalp.
 
 ## Скриншоты интерфейса программы:
 
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/1.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/2.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/3.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/4.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/5.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/6.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/7.png?raw=true)
-![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/8.png?raw=true)
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/1.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/2.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/3.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/4.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/5.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/6.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/7.png?raw=true)<br />
+![alt text](https://github.com/NickSkyyer/CScalp-Global-Settings-Manager/blob/main/screenshots_of_program/8.png?raw=true)<br />
 
 !!! ВНИМАНИЕ !!!
 Для нормальной работы требуется версия Python 3.10. Скачать установщики можно тут:
