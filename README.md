@@ -1,6 +1,8 @@
 # CScalp-Global-Settings-Manager
 Fast way to set up your CScalp.
 
+Видео-обзор программы: https://www.youtube.com/watch?v=Xycc9E3HER0
+
 Данная программа написана на языке программирования Python. Причин написания на Python было несколько:
 
 1. Код программы перед запуском можно просмотреть. Таким образом убедиться в безопасности кода.
