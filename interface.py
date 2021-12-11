@@ -158,41 +158,42 @@ class Application:
     def fill_tab_TICK_PANEL(self):
         # Скрывать отфильтрованные тики
         self.hide_filtered_ticks()
-        # Уведомление: обнаружен крупный объем
-        self.play_big_amount_on_tick()
-        # Толщина линии тиков
-        self.ticks_weight()
         # Складывать тики за период, мсек
         self.sum_ticks_period()
+        # Уведомление: обнаружен крупный объем
+        self.play_big_amount_on_tick()
         # Стиль тиков -- DotsLines -- Точки и линии
         self.ticks_style()
+        # Толщина линии тиков
+        self.ticks_weight()
+
 
     def sum_ticks_period(self):
         ttk.Label(self.tab3_TICK_PANEL,
-                  text='Складывать тики за период, мсек').grid(row=3, column=0, padx=5, pady=5)
+                  text='Складывать тики за период, мсек').grid(row=1, column=0, padx=5, pady=5)
         default_value = tk.StringVar()
         default_value.set('300')
         self.sp_SumTicks_Period = tk.Spinbox(self.tab3_TICK_PANEL, from_=0, to=999999, font='Verdana 10',
                                              textvariable=default_value)
         # spinbox validation
         self.sp_SumTicks_Period.configure(validate="key", validatecommand=self.vcmd)
-        self.sp_SumTicks_Period.grid(row=3, column=1, padx=5, pady=5)
+        self.sp_SumTicks_Period.grid(row=1, column=1, padx=5, pady=5)
 
     def ticks_weight(self):
         ttk.Label(self.tab3_TICK_PANEL,
-                  text='Толщина линии тиков').grid(row=2, column=0, padx=5, pady=5)
+                  text='Толщина линии тиков').grid(row=4, column=0, padx=5, pady=5)
         self.sp_TicksWeight = tk.Spinbox(self.tab3_TICK_PANEL, from_=1, to=3, font='Verdana 10')
         # spinbox validation
         self.sp_TicksWeight.configure(validate="key", validatecommand=self.vcmd_len1)
-        self.sp_TicksWeight.grid(row=2, column=1, padx=5, pady=5)
+        self.sp_TicksWeight.grid(row=4, column=1, padx=5, pady=5)
 
     def play_big_amount_on_tick(self):
         lbl = ttk.Label(self.tab3_TICK_PANEL,
-                        text='Уведомление: обнаружен крупный объем').grid(row=1, column=0, padx=5, pady=5)
+                        text='Уведомление: обнаружен крупный объем').grid(row=2, column=0, padx=5, pady=5)
         self.IMG_OFF4 = tk.PhotoImage(master=self.tab3_TICK_PANEL,
                                       file=self.IMG_OFF_PATH)
         self.lbl_play_big_amount_on_tick = ttk.Label(self.tab3_TICK_PANEL, image=self.IMG_OFF4, cursor='hand2')
-        self.lbl_play_big_amount_on_tick.grid(row=1, column=1, padx=5, pady=5)
+        self.lbl_play_big_amount_on_tick.grid(row=2, column=1, padx=5, pady=5)
         self.is_play_big_amount_on_tick_on = False
         self.lbl_play_big_amount_on_tick.bind('<Button-1>', self.toggle_play_big_amount_on_tick)
 
@@ -248,48 +249,49 @@ class Application:
     # Отображать линейку
     def ruler_data_type(self, tab2_DOM):
         ttk.Label(tab2_DOM,
-                  text='Отображать линейку').grid(row=5, column=0, padx=5, pady=5)
+                  text='Отображать линейку').grid(row=2, column=0, padx=5, pady=5)
         self.cbx_ruler_data_type = ttk.Combobox(tab2_DOM, values=self.RULER_DATA_TYPE, state='readonly')
         self.cbx_ruler_data_type.set('Проценты')
-        self.cbx_ruler_data_type.grid(row=5, column=1, padx=5, pady=5)
+        self.cbx_ruler_data_type.grid(row=2, column=1, padx=5, pady=5)
 
     def fill_tab_DOM(self):
         # Уведомление: обнаружен крупный объем
         self.play_big_amount(self.tab2_DOM)
         # Уведомление: обнаружен крупный объем 2
         self.play_huge_amount(self.tab2_DOM)
+        # Отображать линейку
+        self.ruler_data_type(self.tab2_DOM)
+        # Высота строки
+        self.string_height(self.tab2_DOM)
         # Автопрокрутка
         self.auto_scroll(self.tab2_DOM)
         # Уведомление: сработал сигнальный уровень
         self.play_user_signal_price_levels(self.tab2_DOM)
-        # Высота строки
-        self.string_height(self.tab2_DOM)
-        # Отображать линейку
-        self.ruler_data_type(self.tab2_DOM)
+
 
     def ticks_style(self):
         ttk.Label(self.tab3_TICK_PANEL,
-                  text='Стиль тиков').grid(row=4, column=0, padx=5, pady=5)
+                  text='Стиль тиков').grid(row=3, column=0, padx=5, pady=5)
         self.cbx_ticks_style = ttk.Combobox(self.tab3_TICK_PANEL, values=tuple(self.TICKS_STYLE.keys()),
                                             state='readonly')
         self.cbx_ticks_style.set('Точки и линии')
-        self.cbx_ticks_style.grid(row=4, column=1, padx=5, pady=5)
+        self.cbx_ticks_style.grid(row=3, column=1, padx=5, pady=5)
 
     def string_height(self, tab2_DOM):
         ttk.Label(tab2_DOM,
-                  text='Высота строки').grid(row=4, column=0, padx=5, pady=5)
+                  text='Высота строки').grid(row=3, column=0, padx=5, pady=5)
         self.sp_StringHeight = tk.Spinbox(tab2_DOM, from_=10, to=25, font='Verdana 10')
         # spinbox validation
         self.sp_StringHeight.configure(validate="key", validatecommand=self.vcmd_len2)
-        self.sp_StringHeight.grid(row=4, column=1, padx=5, pady=5)
+        self.sp_StringHeight.grid(row=3, column=1, padx=5, pady=5)
 
     def play_user_signal_price_levels(self, tab2_DOM):
         ttk.Label(tab2_DOM,
-                  text='Уведомление: сработал сигнальный уровень').grid(row=3, column=0, padx=5, pady=5)
+                  text='Уведомление: сработал сигнальный уровень').grid(row=5, column=0, padx=5, pady=5)
         self.IMG_ON2 = tk.PhotoImage(master=tab2_DOM,
                                      file=self.IMG_ON_PATH)
         self.lbl_play_user_signal_price_levels = ttk.Label(tab2_DOM, image=self.IMG_ON2, cursor='hand2')  #
-        self.lbl_play_user_signal_price_levels.grid(row=3, column=1, padx=5, pady=5)
+        self.lbl_play_user_signal_price_levels.grid(row=5, column=1, padx=5, pady=5)
         self.is_play_user_signal_price_levels_on = True
         self.lbl_play_user_signal_price_levels.bind('<Button-1>', self.toggle_play_user_signal_price_levels)
 
@@ -301,11 +303,11 @@ class Application:
 
     def auto_scroll(self, tab2_DOM):
         ttk.Label(tab2_DOM,
-                  text='Автопрокрутка').grid(row=2, column=0, padx=5, pady=5)
+                  text='Автопрокрутка').grid(row=4, column=0, padx=5, pady=5)
         self.IMG_ON3 = tk.PhotoImage(master=tab2_DOM,
                                      file=self.IMG_ON_PATH)
         self.lbl_auto_scroll = ttk.Label(tab2_DOM, image=self.IMG_ON3, cursor='hand2')
-        self.lbl_auto_scroll.grid(row=2, column=1, padx=5, pady=5)
+        self.lbl_auto_scroll.grid(row=4, column=1, padx=5, pady=5)
         self.is_auto_scroll_on = True
         self.lbl_auto_scroll.bind('<Button-1>', self.toggle_auto_scroll)
 
