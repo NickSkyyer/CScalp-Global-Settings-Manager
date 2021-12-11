@@ -27,6 +27,8 @@ class Application:
         self.IMG_ON_PATH = os.path.join(os.path.dirname(__file__), 'on.png')
         self.IMG_OFF_PATH = os.path.join(os.path.dirname(__file__), 'off.png')
 
+        self.path_to_settings_files = r'C:\Program Files (x86)\FSR Launcher\SubApps\CScalp\Data\MVS'
+
         self.tab0_SETTINGS, self.tab1_TRADING, self.tab2_DOM, self.tab3_TICK_PANEL, self.tab4_CLUSTER_PANEL, self.tab5_COMMON_PANEL = self.create_tabs(
             tabControl)
 
@@ -69,7 +71,7 @@ class Application:
                   text='Путь к папке с настроками (.tmp-файлами)').grid(row=0, column=0, padx=5, pady=35)
 
         self.entry_path_to_settings_files = tk.Entry(self.tab0_SETTINGS, width=60)
-        self.entry_path_to_settings_files.insert(0, r'C:\Program Files (x86)\FSR Launcher\SubApps\CScalp\Data\MVS')
+        self.entry_path_to_settings_files.insert(0, self.path_to_settings_files)
         self.entry_path_to_settings_files.grid(row=1, column=0, padx=25, pady=0)
 
     def validate_spinbox(self, new_value):
@@ -414,20 +416,30 @@ class Application:
 
     def apply_settings(self):
 
+        import glob
         import shutil
         from datetime import datetime, timezone
 
         utc_dt = datetime.now(timezone.utc)  # UTC time
 
-        self.dir_name = self.entry_path_to_settings_files.get()
-        os.chdir(self.dir_name)
-        path_parent = os.path.dirname(self.dir_name)
+        self.path_to_tmp_files = self.entry_path_to_settings_files.get()
+        os.chdir(self.path_to_tmp_files)
+        files = glob.glob('BINAD.CCUR*.tmp')
+        path_parent = os.path.dirname(self.path_to_tmp_files)
         str_utc_dt = str(utc_dt).replace(':', '-').replace(' ', '_').replace('+', '_')
-        output_filename = 'xml_settings_backup' + str_utc_dt
-        output_filename = os.path.join(path_parent, output_filename)
+        full_file_name = 'xml_settings_backup' + str_utc_dt
+        full_path_to_new_dir = os.path.join(path_parent, full_file_name)
 
-        shutil.make_archive(output_filename, 'zip', self.dir_name)
-        files = os.listdir(os.getcwd())
+        os.mkdir(full_path_to_new_dir)
+
+        for file in files:
+            full_path_to_tmp_file = os.path.join(self.path_to_tmp_files, file)
+            full_path_to_copy_of_tmp_file = os.path.join(full_path_to_new_dir, file)
+            shutil.copyfile(full_path_to_tmp_file, full_path_to_copy_of_tmp_file)
+
+        base_name = os.path.join(self.path_to_tmp_files, full_file_name)
+        shutil.make_archive(base_name=base_name, format='zip', root_dir=full_path_to_new_dir)
+        shutil.rmtree(path=full_path_to_new_dir)
 
         files_count = 0
 
