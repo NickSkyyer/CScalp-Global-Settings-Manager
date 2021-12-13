@@ -1,4 +1,5 @@
 import os
+import config
 import tkinter as tk
 import tkinter.messagebox as box
 from tkinter import ttk
@@ -7,6 +8,9 @@ from XML_CScalp import *
 
 class Application:
     def __init__(self):
+
+        self.SETTINGS_FILENAME = os.path.join(os.path.dirname(__file__), 'settings.ini')
+
         box.showwarning(title='Внимание',
                         message='Перед нажатием кнопки "Применить" закройте CScalp.')
         self.root = tk.Tk()
@@ -27,7 +31,8 @@ class Application:
         self.IMG_ON_PATH = os.path.join(os.path.dirname(__file__), 'on.png')
         self.IMG_OFF_PATH = os.path.join(os.path.dirname(__file__), 'off.png')
 
-        self.path_to_settings_files = r'C:\Program Files (x86)\FSR Launcher\SubApps\CScalp\Data\MVS'
+        self.path_to_settings_files = config.get_setting(self.SETTINGS_FILENAME, 'OPTIONS',
+                                                         'path_to_settings_files').strip()
 
         self.tab0_SETTINGS, self.tab1_TRADING, self.tab2_DOM, self.tab3_TICK_PANEL, self.tab4_CLUSTER_PANEL, self.tab5_COMMON_PANEL = self.create_tabs(
             tabControl)
@@ -93,11 +98,22 @@ class Application:
     def show_additive_cursor(self):
         self.lbl = ttk.Label(self.tab5_COMMON_PANEL,
                              text='Отображать линию анализа кластеров').grid(row=0, column=0, padx=5, pady=5)
+
+        setting_ShowAdditiveCursor = config.get_setting(self.SETTINGS_FILENAME, 'COMMON_PANEL',
+                                                        'ShowAdditiveCursor').strip() == 'True'
+
         self.IMG_OFF1 = tk.PhotoImage(master=self.tab5_COMMON_PANEL,
                                       file=self.IMG_OFF_PATH)
         self.lbl_show_additive_cursor = ttk.Label(self.tab5_COMMON_PANEL, image=self.IMG_OFF1, cursor='hand2')
-        self.lbl_show_additive_cursor.grid(row=0, column=1, padx=5, pady=5)
         self.is_show_additive_cursor_on = False
+
+        if setting_ShowAdditiveCursor:
+            self.IMG_ON9 = tk.PhotoImage(master=self.tab5_COMMON_PANEL,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_show_additive_cursor = ttk.Label(self.tab5_COMMON_PANEL, image=self.IMG_ON9, cursor='hand2')
+            self.is_show_additive_cursor_on = True
+
+        self.lbl_show_additive_cursor.grid(row=0, column=1, padx=5, pady=5)
         self.lbl_show_additive_cursor.bind('<Button-1>', self.toggle_show_additive_cursor)
 
     def toggle_show_additive_cursor(self, event):
@@ -121,7 +137,15 @@ class Application:
                   text='Стиль кластеров (цвет)').grid(row=3, column=0, padx=5, pady=5)
         self.cbx_cluster_style_color = ttk.Combobox(tab4_CLUSTER_PANEL, values=tuple(self.CLUSTER_STYLE_COLOR.keys()),
                                                     state='readonly', width=25)
-        self.cbx_cluster_style_color.set('Баланс темный')
+
+        setting_ClusterStyleColor = config.get_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL',
+                                                       'ClusterStyleColor').strip()
+
+        for key, value in self.CLUSTER_STYLE_COLOR.items():
+            if str(self.CLUSTER_STYLE_COLOR[key]) == setting_ClusterStyleColor:
+                self.cbx_cluster_style_color.set(key)
+                break
+
         self.cbx_cluster_style_color.grid(row=3, column=1, padx=5, pady=5)
 
     def cluster_style_text(self, tab4_CLUSTER_PANEL):
@@ -129,24 +153,49 @@ class Application:
                   text='Стиль кластеров (текст)').grid(row=2, column=0, padx=5, pady=5)
         self.cbx_cluster_style_text = ttk.Combobox(tab4_CLUSTER_PANEL, values=tuple(self.CLUSTER_STYLE_TEXT.keys()),
                                                    state='readonly', width=25)
-        self.cbx_cluster_style_text.set('Сумма покупок и продаж')
+
+        setting_ClusterStyleText = config.get_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL',
+                                                      'ClusterStyleText').strip()
+
+        for key, value in self.CLUSTER_STYLE_TEXT.items():
+            if str(self.CLUSTER_STYLE_TEXT[key]) == setting_ClusterStyleText:
+                self.cbx_cluster_style_text.set(key)
+                break
+
         self.cbx_cluster_style_text.grid(row=2, column=1, padx=5, pady=5)
 
     def time_frame(self, tab4_CLUSTER_PANEL):
         ttk.Label(tab4_CLUSTER_PANEL,
                   text='Таймфрейм').grid(row=1, column=0, padx=5, pady=5)
         self.cbx_time_frame = ttk.Combobox(tab4_CLUSTER_PANEL, values=tuple(self.TIME_FRAME.keys()), state='readonly')
-        self.cbx_time_frame.set('5m')
+
+        setting_TimeFrame = config.get_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL', 'TimeFrame').strip()
+
+        for key, value in self.TIME_FRAME.items():
+            if str(self.TIME_FRAME[key]) == setting_TimeFrame:
+                self.cbx_time_frame.set(key)
+                break
+
         self.cbx_time_frame.grid(row=1, column=1, padx=5, pady=5)
 
     def show_cluster_panel(self, tab4_CLUSTER_PANEL):
         ttk.Label(tab4_CLUSTER_PANEL,
                   text='Показывать панель кластеров').grid(row=0, column=0, padx=5, pady=5)
-        self.IMG_ON = tk.PhotoImage(master=tab4_CLUSTER_PANEL,
-                                    file=self.IMG_ON_PATH)
-        self.lbl_show_cluster_panel = ttk.Label(tab4_CLUSTER_PANEL, image=self.IMG_ON, cursor='hand2')
+
+        setting_ShowClusterPanel = config.get_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL',
+                                                      'ShowClusterPanel').strip() == 'True'
+        if setting_ShowClusterPanel:
+            self.IMG_ON = tk.PhotoImage(master=tab4_CLUSTER_PANEL,
+                                        file=self.IMG_ON_PATH)
+            self.lbl_show_cluster_panel = ttk.Label(tab4_CLUSTER_PANEL, image=self.IMG_ON, cursor='hand2')
+            self.is_show_cluster_panel_on = True
+        else:
+            self.IMG_OFF11 = tk.PhotoImage(master=tab4_CLUSTER_PANEL,
+                                           file=self.IMG_OFF_PATH)
+            self.lbl_show_cluster_panel = ttk.Label(tab4_CLUSTER_PANEL, image=self.IMG_OFF11, cursor='hand2')
+            self.is_show_cluster_panel_on = False
+
         self.lbl_show_cluster_panel.grid(row=0, column=1, padx=5, pady=5)
-        self.is_show_cluster_panel_on = True
         self.lbl_show_cluster_panel.bind('<Button-1>', self.toggle_show_cluster_panel)
 
     def toggle_show_cluster_panel(self, event):
@@ -167,12 +216,12 @@ class Application:
         # Толщина линии тиков
         self.ticks_weight()
 
-
     def sum_ticks_period(self):
         ttk.Label(self.tab3_TICK_PANEL,
                   text='Складывать тики за период, мсек').grid(row=1, column=0, padx=5, pady=5)
         default_value = tk.StringVar()
-        default_value.set('300')
+        setting_SumTicks_Period = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'SumTicks_Period')
+        default_value.set(setting_SumTicks_Period)
         self.sp_SumTicks_Period = tk.Spinbox(self.tab3_TICK_PANEL, from_=0, to=999999, font='Verdana 10',
                                              textvariable=default_value)
         # spinbox validation
@@ -182,7 +231,11 @@ class Application:
     def ticks_weight(self):
         ttk.Label(self.tab3_TICK_PANEL,
                   text='Толщина линии тиков').grid(row=4, column=0, padx=5, pady=5)
-        self.sp_TicksWeight = tk.Spinbox(self.tab3_TICK_PANEL, from_=1, to=3, font='Verdana 10')
+        default_value = tk.StringVar()
+        setting_TicksWeight = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'TicksWeight')
+        default_value.set(setting_TicksWeight)
+        self.sp_TicksWeight = tk.Spinbox(self.tab3_TICK_PANEL, from_=1, to=3, font='Verdana 10',
+                                         textvariable=default_value)
         # spinbox validation
         self.sp_TicksWeight.configure(validate="key", validatecommand=self.vcmd_len1)
         self.sp_TicksWeight.grid(row=4, column=1, padx=5, pady=5)
@@ -190,11 +243,21 @@ class Application:
     def play_big_amount_on_tick(self):
         lbl = ttk.Label(self.tab3_TICK_PANEL,
                         text='Уведомление: обнаружен крупный объем').grid(row=2, column=0, padx=5, pady=5)
-        self.IMG_OFF4 = tk.PhotoImage(master=self.tab3_TICK_PANEL,
-                                      file=self.IMG_OFF_PATH)
-        self.lbl_play_big_amount_on_tick = ttk.Label(self.tab3_TICK_PANEL, image=self.IMG_OFF4, cursor='hand2')
+
+        setting_PlayBigAmount = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL',
+                                                   'PlayBigAmount').strip() == 'True'
+        if setting_PlayBigAmount:
+            self.IMG_ON8 = tk.PhotoImage(master=self.tab3_TICK_PANEL,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_play_big_amount_on_tick = ttk.Label(self.tab3_TICK_PANEL, image=self.IMG_ON8, cursor='hand2')
+            self.is_play_big_amount_on_tick_on = True
+        else:
+            self.IMG_OFF4 = tk.PhotoImage(master=self.tab3_TICK_PANEL,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_play_big_amount_on_tick = ttk.Label(self.tab3_TICK_PANEL, image=self.IMG_OFF4, cursor='hand2')
+            self.is_play_big_amount_on_tick_on = False
+
         self.lbl_play_big_amount_on_tick.grid(row=2, column=1, padx=5, pady=5)
-        self.is_play_big_amount_on_tick_on = False
         self.lbl_play_big_amount_on_tick.bind('<Button-1>', self.toggle_play_big_amount_on_tick)
 
     def toggle_play_big_amount_on_tick(self, event):
@@ -206,11 +269,21 @@ class Application:
     def hide_filtered_ticks(self):
         ttk.Label(self.tab3_TICK_PANEL,
                   text='Скрывать отфильтрованные тики').grid(row=0, column=0, padx=5, pady=5)
+        setting_HideFilteredTicks = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL',
+                                                       'HideFilteredTicks').strip() == 'True'
+
         self.IMG_ON1 = tk.PhotoImage(master=self.tab3_TICK_PANEL,
                                      file=self.IMG_ON_PATH)
         self.lbl_hide_filtered_ticks = ttk.Label(self.tab3_TICK_PANEL, image=self.IMG_ON1, cursor='hand2')
-        self.lbl_hide_filtered_ticks.grid(row=0, column=1, padx=5, pady=5)
         self.is_hide_filtered_ticks_on = True
+
+        if not setting_HideFilteredTicks:
+            self.IMG_OFF10 = tk.PhotoImage(master=self.tab3_TICK_PANEL,
+                                           file=self.IMG_OFF_PATH)
+            self.lbl_hide_filtered_ticks = ttk.Label(self.tab3_TICK_PANEL, image=self.IMG_OFF10, cursor='hand2')
+            self.is_hide_filtered_ticks_on = False
+
+        self.lbl_hide_filtered_ticks.grid(row=0, column=1, padx=5, pady=5)
         self.lbl_hide_filtered_ticks.bind('<Button-1>', self.toggle_hide_filtered_ticks)
 
     def toggle_hide_filtered_ticks(self, event):
@@ -236,14 +309,17 @@ class Application:
         ttk.Label(tab1_TRADING,
                   text='Отображение прибыли').grid(row=4, column=0, padx=5, pady=5)
         self.cbx_show_profit_type = ttk.Combobox(tab1_TRADING, values=self.SHOW_PROFIT_TYPE, state='readonly')
-        self.cbx_show_profit_type.set('Проценты')
+
+        setting_ShowProfitType = int(config.get_setting(self.SETTINGS_FILENAME, 'TRADING', 'ShowProfitType'))
+        self.cbx_show_profit_type.set(self.SHOW_PROFIT_TYPE[setting_ShowProfitType])
         self.cbx_show_profit_type.grid(row=4, column=1, padx=5, pady=5)
 
     def active_work_amount_key(self, tab1_TRADING):
         ttk.Label(tab1_TRADING,
                   text='Активная клавиша (1 из 5)\n(слева внизу стакана)').grid(row=3, column=0, padx=5, pady=5)
         self.cbx_active_work_amount_key = ttk.Combobox(tab1_TRADING, values=(1, 2, 3, 4, 5), state='readonly')
-        self.cbx_active_work_amount_key.set(1)
+        setting_ActiveWorkAmountKey = int(config.get_setting(self.SETTINGS_FILENAME, 'TRADING', 'ActiveWorkAmountKey'))
+        self.cbx_active_work_amount_key.set(setting_ActiveWorkAmountKey)
         self.cbx_active_work_amount_key.grid(row=3, column=1, padx=5, pady=5)
 
     # Отображать линейку
@@ -251,7 +327,11 @@ class Application:
         ttk.Label(tab2_DOM,
                   text='Отображать линейку').grid(row=2, column=0, padx=5, pady=5)
         self.cbx_ruler_data_type = ttk.Combobox(tab2_DOM, values=self.RULER_DATA_TYPE, state='readonly')
-        self.cbx_ruler_data_type.set('Проценты')
+
+        setting_RulerDataType = int(config.get_setting(self.SETTINGS_FILENAME, 'DOM', 'RulerDataType').strip())
+        str_val = self.RULER_DATA_TYPE[setting_RulerDataType]
+        self.cbx_ruler_data_type.set(str_val)
+
         self.cbx_ruler_data_type.grid(row=2, column=1, padx=5, pady=5)
 
     def fill_tab_DOM(self):
@@ -268,19 +348,28 @@ class Application:
         # Уведомление: сработал сигнальный уровень
         self.play_user_signal_price_levels(self.tab2_DOM)
 
-
     def ticks_style(self):
         ttk.Label(self.tab3_TICK_PANEL,
                   text='Стиль тиков').grid(row=3, column=0, padx=5, pady=5)
         self.cbx_ticks_style = ttk.Combobox(self.tab3_TICK_PANEL, values=tuple(self.TICKS_STYLE.keys()),
                                             state='readonly')
-        self.cbx_ticks_style.set('Точки и линии')
+        setting_TicksStyle = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'TicksStyle').strip()
+
+        for key, value in self.TICKS_STYLE.items():
+            if self.TICKS_STYLE[key] == setting_TicksStyle:
+                self.cbx_ticks_style.set(key)
+                break
+
         self.cbx_ticks_style.grid(row=3, column=1, padx=5, pady=5)
 
     def string_height(self, tab2_DOM):
         ttk.Label(tab2_DOM,
                   text='Высота строки').grid(row=3, column=0, padx=5, pady=5)
-        self.sp_StringHeight = tk.Spinbox(tab2_DOM, from_=10, to=25, font='Verdana 10')
+        default_value = tk.StringVar()
+        setting_StringHeight = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'StringHeight')
+        default_value.set(setting_StringHeight)
+        self.sp_StringHeight = tk.Spinbox(tab2_DOM, from_=10, to=25, font='Verdana 10',
+                                          textvariable=default_value)
         # spinbox validation
         self.sp_StringHeight.configure(validate="key", validatecommand=self.vcmd_len2)
         self.sp_StringHeight.grid(row=3, column=1, padx=5, pady=5)
@@ -288,11 +377,21 @@ class Application:
     def play_user_signal_price_levels(self, tab2_DOM):
         ttk.Label(tab2_DOM,
                   text='Уведомление: сработал сигнальный уровень').grid(row=5, column=0, padx=5, pady=5)
-        self.IMG_ON2 = tk.PhotoImage(master=tab2_DOM,
-                                     file=self.IMG_ON_PATH)
-        self.lbl_play_user_signal_price_levels = ttk.Label(tab2_DOM, image=self.IMG_ON2, cursor='hand2')  #
+        setting_PlayUserSignalPriceLevels = config.get_setting(self.SETTINGS_FILENAME, 'DOM',
+                                                               'PlayUserSignalPriceLevels').strip() == 'True'
+
+        if setting_PlayUserSignalPriceLevels:
+            self.IMG_ON2 = tk.PhotoImage(master=tab2_DOM,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_play_user_signal_price_levels = ttk.Label(tab2_DOM, image=self.IMG_ON2, cursor='hand2')  #
+            self.is_play_user_signal_price_levels_on = True
+        else:
+            self.IMG_OFF9 = tk.PhotoImage(master=tab2_DOM,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_play_user_signal_price_levels = ttk.Label(tab2_DOM, image=self.IMG_OFF9, cursor='hand2')
+            self.is_play_user_signal_price_levels_on = False
+
         self.lbl_play_user_signal_price_levels.grid(row=5, column=1, padx=5, pady=5)
-        self.is_play_user_signal_price_levels_on = True
         self.lbl_play_user_signal_price_levels.bind('<Button-1>', self.toggle_play_user_signal_price_levels)
 
     def toggle_play_user_signal_price_levels(self, event):
@@ -304,11 +403,21 @@ class Application:
     def auto_scroll(self, tab2_DOM):
         ttk.Label(tab2_DOM,
                   text='Автопрокрутка').grid(row=4, column=0, padx=5, pady=5)
-        self.IMG_ON3 = tk.PhotoImage(master=tab2_DOM,
-                                     file=self.IMG_ON_PATH)
-        self.lbl_auto_scroll = ttk.Label(tab2_DOM, image=self.IMG_ON3, cursor='hand2')
+        setting_AutoScroll = config.get_setting(self.SETTINGS_FILENAME, 'DOM',
+                                                'AutoScroll').strip() == 'True'
+
+        if setting_AutoScroll:
+            self.IMG_ON3 = tk.PhotoImage(master=tab2_DOM,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_auto_scroll = ttk.Label(tab2_DOM, image=self.IMG_ON3, cursor='hand2')
+            self.is_auto_scroll_on = True
+        else:
+            self.IMG_OFF8 = tk.PhotoImage(master=tab2_DOM,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_auto_scroll = ttk.Label(tab2_DOM, image=self.IMG_OFF8, cursor='hand2')
+            self.is_auto_scroll_on = False
+
         self.lbl_auto_scroll.grid(row=4, column=1, padx=5, pady=5)
-        self.is_auto_scroll_on = True
         self.lbl_auto_scroll.bind('<Button-1>', self.toggle_auto_scroll)
 
     def toggle_auto_scroll(self, event):
@@ -320,11 +429,21 @@ class Application:
     def play_huge_amount(self, tab2_DOM):
         ttk.Label(tab2_DOM,
                   text='Уведомление: обнаружен крупный объем 2').grid(row=1, column=0, padx=5, pady=5)
-        self.IMG_OFF2 = tk.PhotoImage(master=tab2_DOM,
-                                      file=self.IMG_OFF_PATH)
-        self.lbl_play_huge_amount = ttk.Label(tab2_DOM, image=self.IMG_OFF2, cursor='hand2')
+        setting_PlayHugeAmount = config.get_setting(self.SETTINGS_FILENAME, 'DOM',
+                                                    'PlayHugeAmount').strip() == 'True'
+
+        if setting_PlayHugeAmount:
+            self.IMG_ON7 = tk.PhotoImage(master=tab2_DOM,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_play_huge_amount = ttk.Label(tab2_DOM, image=self.IMG_ON7, cursor='hand2')
+            self.is_play_huge_amount_on = True
+        else:
+            self.IMG_OFF2 = tk.PhotoImage(master=tab2_DOM,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_play_huge_amount = ttk.Label(tab2_DOM, image=self.IMG_OFF2, cursor='hand2')
+            self.is_play_huge_amount_on = False
+        #
         self.lbl_play_huge_amount.grid(row=1, column=1, padx=5, pady=5)
-        self.is_play_huge_amount_on = False
         self.lbl_play_huge_amount.bind('<Button-1>', self.toggle_play_huge_amount)
 
     def toggle_play_huge_amount(self, event):
@@ -336,11 +455,22 @@ class Application:
     def play_big_amount(self, tab2_DOM):
         ttk.Label(tab2_DOM,
                   text='Уведомление: обнаружен крупный объем').grid(row=0, column=0, padx=5, pady=5)
-        self.IMG_OFF3 = tk.PhotoImage(master=tab2_DOM,
-                                      file=self.IMG_OFF_PATH)
-        self.lbl_play_big_amount = ttk.Label(tab2_DOM, image=self.IMG_OFF3, cursor='hand2')
+
+        setting_PlayBigAmount = config.get_setting(self.SETTINGS_FILENAME, 'DOM',
+                                                   'PlayBigAmount').strip() == 'True'
+
+        if setting_PlayBigAmount:
+            self.IMG_ON6 = tk.PhotoImage(master=tab2_DOM,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_play_big_amount = ttk.Label(tab2_DOM, image=self.IMG_ON6, cursor='hand2')
+            self.is_play_big_amount_on = True
+        else:
+            self.IMG_OFF3 = tk.PhotoImage(master=tab2_DOM,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_play_big_amount = ttk.Label(tab2_DOM, image=self.IMG_OFF3, cursor='hand2')
+            self.is_play_big_amount_on = False
+        #
         self.lbl_play_big_amount.grid(row=0, column=1, padx=5, pady=5)
-        self.is_play_big_amount_on = False
         self.lbl_play_big_amount.bind('<Button-1>', self.toggle_play_big_amount)
 
     def toggle_play_big_amount(self, event):
@@ -353,11 +483,21 @@ class Application:
     def is_work_amount_in_money_mode(self, tab1_TRADING):
         ttk.Label(tab1_TRADING,
                   text='Галочка "Ввод в $"').grid(row=2, column=0, padx=5, pady=5)
-        self.IMG_ON4 = tk.PhotoImage(master=tab1_TRADING,
-                                     file=self.IMG_ON_PATH)
-        self.lbl_IsWorkAmountInMoneyMode = ttk.Label(tab1_TRADING, image=self.IMG_ON4, cursor='hand2')
+        setting_IsWorkAmountInMoneyMode = config.get_setting(self.SETTINGS_FILENAME, 'TRADING',
+                                                             'IsWorkAmountInMoneyMode').strip() == 'True'
+
+        if setting_IsWorkAmountInMoneyMode:
+            self.IMG_ON4 = tk.PhotoImage(master=tab1_TRADING,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_IsWorkAmountInMoneyMode = ttk.Label(tab1_TRADING, image=self.IMG_ON4, cursor='hand2')
+            self.isWorkAmountInMoneyMode_on = True
+        else:
+            self.IMG_OFF6 = tk.PhotoImage(master=tab1_TRADING,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_IsWorkAmountInMoneyMode = ttk.Label(tab1_TRADING, image=self.IMG_OFF6, cursor='hand2')
+            self.isWorkAmountInMoneyMode_on = False
+        #
         self.lbl_IsWorkAmountInMoneyMode.grid(row=2, column=1, padx=5, pady=5)
-        self.isWorkAmountInMoneyMode_on = True
         self.lbl_IsWorkAmountInMoneyMode.bind('<Button-1>', self.toggle_IsWorkAmountInMoneyMode)
 
     def toggle_IsWorkAmountInMoneyMode(self, event):
@@ -386,18 +526,32 @@ class Application:
     def play_sound_on_trade(self, tab1_TRADING):
         ttk.Label(tab1_TRADING,
                   text='Уведомление: совершена\nсделка').grid(row=1, column=0, padx=5, pady=5)
-        self.IMG_ON5 = tk.PhotoImage(master=tab1_TRADING,
-                                     file=self.IMG_ON_PATH)
-        self.lbl_PlaySoundOnTrade = ttk.Label(tab1_TRADING, image=self.IMG_ON5, cursor='hand2')
+        setting_PlaySoundOnTrade = config.get_setting(self.SETTINGS_FILENAME, 'TRADING',
+                                                      'PlaySoundOnTrade').strip() == 'True'
+
+        if setting_PlaySoundOnTrade:
+            self.IMG_ON5 = tk.PhotoImage(master=tab1_TRADING,
+                                         file=self.IMG_ON_PATH)
+            self.lbl_PlaySoundOnTrade = ttk.Label(tab1_TRADING, image=self.IMG_ON5, cursor='hand2')
+            self.is_PlaySoundOnTrade_on = True
+        else:
+            self.IMG_OFF5 = tk.PhotoImage(master=tab1_TRADING,
+                                          file=self.IMG_OFF_PATH)
+            self.lbl_PlaySoundOnTrade = ttk.Label(tab1_TRADING, image=self.IMG_OFF5, cursor='hand2')
+            self.is_PlaySoundOnTrade_on = False
+
         self.lbl_PlaySoundOnTrade.grid(row=1, column=1, padx=5, pady=5)
-        self.is_PlaySoundOnTrade_on = True
         self.lbl_PlaySoundOnTrade.bind('<Button-1>', self.toggle_play_sound_on_trade)
 
     # Дальность заброса лимитных заявок
     def throw_limit_to(self, tab1_TRADING):
         ttk.Label(tab1_TRADING,
                   text='Дальность заброса\nлимитных заявок').grid(row=0, column=0, padx=5, pady=5)
-        self.sp_ThrowLimitTo = tk.Spinbox(tab1_TRADING, from_=0, to=100, font='Verdana 10')
+        default_value = tk.StringVar()
+        setting_ThrowLimitTo = config.get_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'ThrowLimitTo')
+        default_value.set(setting_ThrowLimitTo)
+        self.sp_ThrowLimitTo = tk.Spinbox(tab1_TRADING, from_=0, to=100, font='Verdana 10',
+                                          textvariable=default_value)
         # Spinbox Validation
         self.sp_ThrowLimitTo.configure(validate="key", validatecommand=self.vcmd)
         self.sp_ThrowLimitTo.grid(row=0, column=1, padx=5, pady=5)
@@ -462,7 +616,7 @@ class Application:
                     pass
                 try:
                     xml['Settings']['TRADING']['IsWorkAmountInMoneyMode']['@Value'] = str(
-                        self.is_PlaySoundOnTrade_on)
+                        self.isWorkAmountInMoneyMode_on)
                 except KeyError:
                     pass
                 try:
@@ -561,6 +715,9 @@ class Application:
                 add_newline_char_to_end(xml_lines)
                 save_new_content_to_xml(file_name=file,
                                         xml_lines=xml_lines)
+
+        self.save_settings_to_config()
+
         if files_count:
             box.showinfo(title='Информация',
                          message='Все настройки сохранены.\n'
@@ -570,6 +727,65 @@ class Application:
             box.showinfo(title='Информация',
                          message=f'Настроено {files_count} файлов (стаканов).\n'
                                  'Можете снова запустить CScalp.')
+
+    def save_settings_to_config(self):
+        config.update_setting(self.SETTINGS_FILENAME, 'OPTIONS', 'path_to_settings_files',
+                              str(self.entry_path_to_settings_files.get()))
+
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'HideFilteredTicks',
+                              str(self.is_hide_filtered_ticks_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'SumTicks_Period',
+                              str(self.sp_SumTicks_Period.get()))
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'TicksWeight',
+                              str(self.sp_TicksWeight.get()))
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'PlayBigAmount',
+                              str(self.is_play_big_amount_on_tick_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'ThrowLimitTo',
+                              str(self.sp_ThrowLimitTo.get()))
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'StringHeight',
+                              str(self.sp_StringHeight.get()))
+        key = self.cbx_ticks_style.get()
+        config.update_setting(self.SETTINGS_FILENAME, 'TICK_PANEL', 'TicksStyle',
+                              self.TICKS_STYLE[key])
+
+        config.update_setting(self.SETTINGS_FILENAME, 'TRADING', 'PlaySoundOnTrade',
+                              str(self.is_PlaySoundOnTrade_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'TRADING', 'IsWorkAmountInMoneyMode',
+                              str(self.isWorkAmountInMoneyMode_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'TRADING', 'ActiveWorkAmountKey',
+                              str(self.cbx_active_work_amount_key.get()))
+        str_val = self.cbx_show_profit_type.get()
+        int_val = self.SHOW_PROFIT_TYPE.index(str_val)
+        config.update_setting(self.SETTINGS_FILENAME, 'TRADING', 'ShowProfitType',
+                              str(int_val))
+
+        config.update_setting(self.SETTINGS_FILENAME, 'DOM', 'PlayBigAmount',
+                              str(self.is_play_big_amount_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'DOM', 'PlayHugeAmount',
+                              str(self.is_play_huge_amount_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'DOM', 'AutoScroll',
+                              str(self.is_auto_scroll_on))
+        config.update_setting(self.SETTINGS_FILENAME, 'DOM', 'PlayUserSignalPriceLevels',
+                              str(self.is_play_user_signal_price_levels_on))
+        str_val = self.cbx_ruler_data_type.get()
+        int_val = self.RULER_DATA_TYPE.index(str_val)
+        config.update_setting(self.SETTINGS_FILENAME, 'DOM', 'RulerDataType',
+                              str(int_val))
+
+        config.update_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL', 'ShowClusterPanel',
+                              str(self.is_show_cluster_panel_on))
+        key = self.cbx_time_frame.get()
+        config.update_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL', 'TimeFrame',
+                              str(self.TIME_FRAME[key]))
+        key = self.cbx_cluster_style_text.get()
+        config.update_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL', 'ClusterStyleText',
+                              str(self.CLUSTER_STYLE_TEXT[key]))
+        key = self.cbx_cluster_style_color.get()
+        config.update_setting(self.SETTINGS_FILENAME, 'CLUSTER_PANEL', 'ClusterStyleColor',
+                              str(self.CLUSTER_STYLE_COLOR[key]))
+
+        config.update_setting(self.SETTINGS_FILENAME, 'COMMON_PANEL', 'ShowAdditiveCursor',
+                              str(self.is_show_additive_cursor_on))
 
 
 Application()
